@@ -13,6 +13,7 @@ func ProductRoutes(router *gin.Engine, productsController *controller.ProductCon
 		productGroup.POST("/", productsController.PostProduct)
 		productGroup.PATCH("/:user_id", productsController.UpdateProduct)
 		productGroup.DELETE("/:user_id", productsController.DeleteProduct)
+		productGroup.POST("/upload-file", productsController.UploadFile)
 	}
 
 }

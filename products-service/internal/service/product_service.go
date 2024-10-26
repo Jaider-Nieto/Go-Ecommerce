@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"mime/multipart"
 	"strconv"
 
 	"github.com/jaider-nieto/ecommerce-go/products-service/internal/interfaces"
@@ -11,10 +12,11 @@ import (
 type ProductService struct {
 	repository interfaces.ProductMongoRepositoryInterface
 	cache      interfaces.ProductRedisRepositoryInterface
+	s3         interfaces.S3RepositoryInterface
 }
 
-func NewProductService(repository interfaces.ProductMongoRepositoryInterface, cache interfaces.ProductRedisRepositoryInterface) *ProductService {
-	return &ProductService{repository: repository, cache: cache}
+func NewProductService(repository interfaces.ProductMongoRepositoryInterface, cache interfaces.ProductRedisRepositoryInterface, s3 interfaces.S3RepositoryInterface) interfaces.ProductServiceInterface {
+	return &ProductService{repository: repository, cache: cache, s3: s3}
 }
 
 func (s *ProductService) GetAllProducts(ctx context.Context, page, size int) ([]models.Product, error) {
@@ -44,10 +46,6 @@ func (s *ProductService) GetAllProducts(ctx context.Context, page, size int) ([]
 
 	return products, nil
 }
-
-func String(page int) {
-	panic("unimplemented")
-}
 func (s *ProductService) GetOneProduct(ctx context.Context, id string) (*models.Product, error) {
 	// Intenta obtener el producto del caché de Redis.
 	cacheProduct, err := s.cache.GetOne(ctx, "product_"+id)
@@ -72,7 +70,7 @@ func (s *ProductService) GetOneProduct(ctx context.Context, id string) (*models.
 
 	return product, nil
 }
-func (s *ProductService) CreateProduct(ctx context.Context, product models.Product) error {
+func (s *ProductService) CreateProduct(ctx context.Context, product models.CreateProduct) error {
 	// Limpia el cache existente y maneja el error si lo hay.
 	if err := s.cache.Clean(ctx); err != nil {
 		return err
@@ -80,7 +78,13 @@ func (s *ProductService) CreateProduct(ctx context.Context, product models.Produ
 
 	return s.repository.Create(ctx, product)
 }
-
+func (s *ProductService) UploadFile(ctx context.Context, file multipart.File) (string, error) {
+	url, err := s.s3.UploadFile(file)
+	if err != nil || url == "" {
+		return "", err
+	}
+	return url, nil
+}
 func (s *ProductService) DeleteProduct(ctx context.Context, id string) error {
 	// Elimina el producto en la base de datos y maneja el error si lo hay.
 	if err := s.repository.Delete(ctx, id); err != nil {
@@ -94,7 +98,6 @@ func (s *ProductService) DeleteProduct(ctx context.Context, id string) error {
 
 	return nil
 }
-
 func (s *ProductService) UpdateProduct(ctx context.Context, id string, product map[string]interface{}) error {
 	if err := s.repository.Update(ctx, id, product); err != nil {
 		return err

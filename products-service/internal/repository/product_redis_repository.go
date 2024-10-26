@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jaider-nieto/ecommerce-go/products-service/internal/interfaces"
 	"github.com/jaider-nieto/ecommerce-go/products-service/internal/models"
 	"github.com/redis/go-redis/v9"
 )
@@ -16,7 +17,7 @@ type ProductRedisRepository struct {
 }
 
 // NewProductRedisRepository inicializa un nuevo repositorio Redis para productos
-func NewProductRedisRepository(client *redis.Client) *ProductRedisRepository {
+func NewProductRedisRepository(client *redis.Client) interfaces.ProductRedisRepositoryInterface {
 	return &ProductRedisRepository{client: client}
 }
 

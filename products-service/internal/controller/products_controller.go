@@ -5,18 +5,18 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jaider-nieto/ecommerce-go/products-service/internal/interfaces"
 	"github.com/jaider-nieto/ecommerce-go/products-service/internal/models"
-	"github.com/jaider-nieto/ecommerce-go/products-service/internal/service"
 )
 
 // ProductController maneja las solicitudes relacionadas con productos.
 type ProductController struct {
-	service service.ProductService // Servicio para manejar la lógica de negocio de productos
+	service interfaces.ProductServiceInterface
 }
 
 // NewProductController crea una nueva instancia de ProductController.
-func NewProductController(service *service.ProductService) *ProductController {
-	return &ProductController{service: *service}
+func NewProductController(service interfaces.ProductServiceInterface) *ProductController {
+	return &ProductController{service: service}
 }
 
 // GetProduct maneja la solicitud para obtener un producto específico por ID.
@@ -91,7 +91,7 @@ func (ctr *ProductController) GetProduct(c *gin.Context) {
 // @Failure 400 {object} error "error"
 // @Router /products [post]
 func (ctrl *ProductController) PostProduct(c *gin.Context) {
-	var product models.Product
+	var product models.CreateProduct
 
 	// Vincula el cuerpo de la solicitud a la estructura Product
 	if err := c.BindJSON(&product); err != nil {
@@ -106,8 +106,7 @@ func (ctrl *ProductController) PostProduct(c *gin.Context) {
 	}
 
 	// Llama al servicio para crear el producto
-	err := ctrl.service.CreateProduct(c.Request.Context(), product)
-	if err != nil {
+	if err := ctrl.service.CreateProduct(c.Request.Context(), product); err != nil {
 		// Retorna un error si ocurre al crear el producto
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -115,6 +114,30 @@ func (ctrl *ProductController) PostProduct(c *gin.Context) {
 
 	c.JSON(http.StatusOK, "created product")
 }
+
+func (ctrl *ProductController) UploadFile(c *gin.Context) {
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	defer file.Close()
+
+	url, err := ctrl.service.UploadFile(c.Request.Context(), file)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, url)
+}
+
 
 // DeleteProduct maneja la solicitud para borrar un producto.
 // @Summary Delete a product

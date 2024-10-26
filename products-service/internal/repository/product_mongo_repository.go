@@ -75,7 +75,7 @@ func (r *ProductRepository) FindOne(ctx context.Context, id string) (*models.Pro
 }
 
 // Create inserta un nuevo producto en la colección y devuelve el resultado de la operación.
-func (r *ProductRepository) Create(ctx context.Context, product models.Product) error {
+func (r *ProductRepository) Create(ctx context.Context, product models.CreateProduct) error {
 	_, err := r.collection.InsertOne(ctx, product)
 	if err != nil {
 		return fmt.Errorf("error inserting product: %v", err) // Mensaje de error informativo.

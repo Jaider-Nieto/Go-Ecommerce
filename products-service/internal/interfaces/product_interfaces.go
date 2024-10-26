@@ -2,9 +2,19 @@ package interfaces
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/jaider-nieto/ecommerce-go/products-service/internal/models"
 )
+
+type ProductServiceInterface interface {
+	GetAllProducts(ctx context.Context, page, size int) ([]models.Product, error)
+	GetOneProduct(ctx context.Context, id string) (*models.Product, error)
+	CreateProduct(ctx context.Context, product models.CreateProduct) error
+	DeleteProduct(ctx context.Context, id string) error
+	UpdateProduct(ctx context.Context, id string, product map[string]interface{}) error
+	UploadFile(ctx context.Context, file multipart.File) (string, error)
+}
 
 // ProductMongoRepositoryInterface define los métodos para interactuar con productos en MongoDB.
 type ProductMongoRepositoryInterface interface {
@@ -13,7 +23,7 @@ type ProductMongoRepositoryInterface interface {
 	// FindOne busca un producto por su ID y lo retorna.
 	FindOne(ctx context.Context, id string) (*models.Product, error)
 	// Create inserta un nuevo producto y retorna el resultado de la operación.
-	Create(ctx context.Context, product models.Product) error
+	Create(ctx context.Context, product models.CreateProduct) error
 	// Delete Elimina un producto por su ID.
 	Delete(ctx context.Context, id string) error
 	// Exist Determina si un producto existe en la base de datos
