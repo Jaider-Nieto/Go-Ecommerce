@@ -21,15 +21,15 @@ func NewProductController(service interfaces.ProductServiceInterface) *ProductCo
 
 // GetProduct maneja la solicitud para obtener un producto específico por ID.
 // @Summary Get a product
-// @Description Retrieve a product by user_id from the database
+// @Description Retrieve a product by product_id from the database
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param user_id path string true "User ID" example("12345")
+// @Param product_id path string true "Product ID" example("12345")
 // @Success 200 {object} models.Product "Product data"
 // @Failure 400 {object} map[string]string "Error description"
 // @Failure 404 {object} map[string]string "Product not found"
-// @Router /products/{user_id} [get]
+// @Router /products/{product_id} [get]
 func (ctrl *ProductController) GetProducts(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")      // Si no se pasa el parámetro, usa 1
 	pageSize := c.DefaultQuery("size", "10") // Si no se pasa el parámetro, usa 10
@@ -60,17 +60,17 @@ func (ctrl *ProductController) GetProducts(c *gin.Context) {
 
 // GetProduct maneja la solicitud para obtener un producto específico por ID.
 // @Summary Get a product
-// @Description Retrieve a product by user_id from the database
+// @Description Retrieve a product by product_id from the database
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param user_id path string true "User ID"
+// @Param product_id path string true "Product ID"
 // @Success 200 {object} models.Product
 // @Failure 400 {object} map[string]string "error"
-// @Router /products/{user_id} [get]
+// @Router /products/{product_id} [get]
 func (ctr *ProductController) GetProduct(c *gin.Context) {
 	// Llama al servicio para obtener un producto por ID
-	product, err := ctr.service.GetOneProduct(c.Request.Context(), c.Param("user_id"))
+	product, err := ctr.service.GetOneProduct(c.Request.Context(), c.Param("product_id"))
 	if err != nil {
 		// Retorna un error si ocurre al obtener el producto
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -141,17 +141,17 @@ func (ctrl *ProductController) UploadFile(c *gin.Context) {
 
 // DeleteProduct maneja la solicitud para borrar un producto.
 // @Summary Delete a product
-// @Description Delete a product by its user_id
+// @Description Delete a product by its product_id
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param user_id path string true "User ID"
+// @Param product_id path string true "Product ID"
 // @Success 200 {object} string "deleted product"
 // @Failure 400 {object} map[string]string "error"
-// @Router /products/{user_id} [delete]
+// @Router /products/{product_id} [delete]
 func (ctrl *ProductController) DeleteProduct(c *gin.Context) {
-	// Llama al servicio para borrar el producto utilizando el user_id del parámetro de la URL
-	if err := ctrl.service.DeleteProduct(c.Request.Context(), c.Param("user_id")); err != nil {
+	// Llama al servicio para borrar el producto utilizando el product_id del parámetro de la URL
+	if err := ctrl.service.DeleteProduct(c.Request.Context(), c.Param("product_id")); err != nil {
 		// Si ocurre un error al borrar, retorna un mensaje de error con el código 400
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -162,15 +162,15 @@ func (ctrl *ProductController) DeleteProduct(c *gin.Context) {
 
 // UpdateProduct maneja la solicitud para actualizar un producto.
 // @Summary Update a product
-// @Description Update a product's fields using its user_id
+// @Description Update a product's fields using its product_id
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param user_id path string true "User ID"
+// @Param product_id path string true "Product ID"
 // @Param updates body map[string]interface{} true "Product fields to update"
 // @Success 200 {object} string "updated product"
 // @Failure 400 {object} map[string]string "error"
-// @Router /products/{user_id} [patch]
+// @Router /products/{product_id} [patch]
 func (ctrl *ProductController) UpdateProduct(c *gin.Context) {
 	// Declara un mapa para almacenar los campos a actualizar enviados en el cuerpo de la solicitud
 	var updates map[string]interface{}
@@ -182,8 +182,8 @@ func (ctrl *ProductController) UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	// Llama al servicio para actualizar el producto utilizando el user_id y los campos proporcionados
-	if err := ctrl.service.UpdateProduct(c.Request.Context(), c.Param("user_id"), updates); err != nil {
+	// Llama al servicio para actualizar el producto utilizando el product_id y los campos proporcionados
+	if err := ctrl.service.UpdateProduct(c.Request.Context(), c.Param("product_id"), updates); err != nil {
 		// Si ocurre un error al actualizar, retorna un mensaje de error con el código 400
 		c.JSON(http.StatusBadRequest, err)
 		return

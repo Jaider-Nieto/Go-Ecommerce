@@ -16,8 +16,8 @@ services:
       - MONGO_URI=mongodb://root:1005@mongodb:27017/products_db?authSource=admin
     volumes:
       - ./src:/app
-    networks:
-      - backend-network
+    # networks:
+    #   - backend-network
 
   mongodb:
     image: mongo:latest
@@ -29,8 +29,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 1005
     volumes:
       - mongodb_data:/data/db
-    networks:
-      - backend-network
+    # networks:
+    #   - backend-network
 
   redis:
     image: redis:alpine
@@ -39,13 +39,12 @@ services:
       - "6379:6379"
     environment:
       REDIS_PASSWORD: redispass
-    networks:
-      - backend-network
+    # networks:
+    #   - backend-network
 
 volumes:
   mongodb_data:
 
-
-networks:
-  backend-network:
-    driver: bridge
+    # networks:
+    #   backend-network:
+    #     driver: bridge

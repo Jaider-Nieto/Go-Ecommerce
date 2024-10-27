@@ -22,7 +22,7 @@ type CreateProduct struct {
 	Category    string `json:"category" bson:"category" validate:"required"`
 	Price       uint   `json:"price" bson:"price" validate:"required"`
 	Stock       uint   `json:"stock" bson:"stock" validate:"required"`
-	Image       string `bson:"stock"`
+	Image       string `bson:"image"`
 }
 
 func (p *CreateProduct) IsValidCategory() bool {
