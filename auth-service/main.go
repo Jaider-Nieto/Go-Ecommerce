@@ -9,6 +9,7 @@ func main() {
 	router := gin.Default()
 
 	router.POST("/auth", auth.AuthLogin)
+	router.GET("/validate-token", auth.ValidateToken)
 
 	router.Run(":8081")
 }

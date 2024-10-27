@@ -3,8 +3,10 @@ package auth
 import (
 	"bytes"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthLogin(c *gin.Context) {
@@ -34,4 +36,36 @@ func validCreds(email, password string) bool {
 		return false
 	}
 	return true
+}
+
+func ValidateToken(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+
+	if authHeader == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+		return
+	}
+
+	// Extraer el token del encabezado
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization format"})
+		return
+	}
+
+	tokenString := parts[1]
+	claims := &jwt.RegisteredClaims{}
+
+	//Verificar el token
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// Debes devolver tu clave secreta
+		return []byte("SECRET_JWT"), nil
+	})
+	if err != nil || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+	
+	// Token válido
+	c.JSON(http.StatusOK, gin.H{"message": "Token is valid", "claims": claims})
 }
