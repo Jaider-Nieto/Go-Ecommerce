@@ -1,15 +1,25 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
-	"github.com/jaider-nieto/ecommerce-go/auth-service/auth"
+	"github.com/jaider-nieto/ecommerce-go/auth-service/internal/config"
+	"github.com/jaider-nieto/ecommerce-go/auth-service/internal/routes"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
 	router := gin.Default()
 
-	router.POST("/auth", auth.AuthLogin)
-	router.GET("/validate-token", auth.ValidateToken)
+	c := config.NewContainer()
 
-	router.Run(":8081")
+	routes.AuthRoutes(router, c)
+
+	router.Run(os.Getenv("PORT"))
 }

@@ -1,4 +1,4 @@
-package auth
+package models
 
 type Creds struct {
 	Email    string `json:"email"`
