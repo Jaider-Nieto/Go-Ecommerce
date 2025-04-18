@@ -23,7 +23,7 @@ La estructura del proyecto es la siguiente:
 ```plaintext
 ecommerce-go/
 ├── db/                 # Configuración y manejo de la base de datos
-│   └── connection.go           # Conexión a la base de datos y funciones relacionadas
+│   └── connection.go   # Conexión a la base de datos y funciones relacionadas
 ├── models/             # Definición de modelos y relaciones
 │   ├── user.go         # Modelo y migración de la tabla 'users'
 │   └── task.go         # Modelo y migración de la tabla 'tasks'
